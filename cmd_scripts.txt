@@ -1,0 +1,352 @@
+Find:
+
+find /www/ -type f  -exec ls -lh {} \;  | awk -F" " '{print $5  "\t"  $9}'
+
+=======================================================================================================================
+SED:  
+ sed  's/\.\//@\//g' files.txt  >diff.txt  -->replaces ./  with @
+ 
+========================================================================================================================
+AWK:
+cat diff.txt  |awk -F "@/" '{print $2}' 
+=======================================================================================================================
+FOR Loop:
+
+ for  i in `cat /data/mvelucha/checking/testfiles.txt`;do ls -l $i;done >checking.txt  2>&1  --> this will redirect the errors to the file
+
+
+ 1039  for i in `cat users.txt`;do id $i; done >added.out 2>&1
+ 1048  for i in `cat users.txt`;do echo "##################$i##########" ;mkdir /home/$i;done 
+ 1054  for i in `cat users.txt`;do echo "##################$i##########" ;chown $i /home/$i;done 
+ 1057  for i in `cat users.txt`;do echo "##################$i##########" ;chmod 700 /home/$i;done 
+ 1094  for i in `cat users.txt`;do gpasswd -a $i allyou ;groups $i;done 
+ 1096  for i in `cat users.txt`;do echo "#########$i############"; id $i;done 
+
+
+=========================================================================================================================
+
+=======================================================================================
+giving permisions in health cms hosts
+=========================================================================================
+Please grant me write access to vanity.conf and redirects.conf for Health.
+health/static/redire​cts/vanity.conf
+health/static/redire​cts/redirects.conf 
+
+ssh hostanme
+#ls -l /www2/health/static/redire​cts/vanity.conf
+rw-rw-r--  1 root healtcmr 155335 Sep 11 11:55 health/static/redirects/vanity.conf
+#
+so we need to add the user to this group healtcmr
+check the user has an a/c on that hosts
+#id username (it gives the username and the groups he has added)
+if he is not added to the healtcmr, add him to the group by editing the group file
+
+# cp -p /usr/local/etc/push.acl /usr/local/etc/archive/push.acl.20091030-1412.mvp
+#add the user to this file in heath or in required thing
+
+==============================================================================================================	
+please copy cp's basic-auth credentials through apache-repo for this instance and rsync. Get Justin to retest.
+Display Request - 76413
+==============================================================================================================
+login in to cp -p26
+
+#cp:/opt/netscape/enterprise/pf-bin/ns-pw  (passwd stored in this file)
+
+login in to repo
+
+#ssh repo
+#/data/repo/apache/
+It has all the apache server configs and with cluster name
+to find the cluster use dig
+ex: dig qa-audience.timeinc.net
+do revese for the ip 
+
+ dig -x ipaddress
+get the hostname and grep it in the repo dir
+# grep hostname /data/repo/apache/cluster*/hosts
+
+#cd /data/repo/apache/cluster-audience-qa
+apache  hosts  hosts~  hosts.marc  hosts.marc~  ti-bin  ti-conf
+
+####ti-conf dir has apache configs###############
+
+#ls -l /data/repo/apache/passwords/diff-passwords.pl
+
+it sync the passwd from cp to apache repo
+
+#/data/repo/apache/rsync.pl -n audience-qa
+
+this will run a dry run 
+
+#/data/repo/apache/rsync.pl  audience-qa
+
+this will sync the passwd file to the cluster hosts
+
+ask the user to test it out
+
+======================================================================================================
+Access to hosts   ---> Request - 76451
+======================================================================================================
+
+1. login to the host 
+2. check the user a/c is there are not  in passwd file or do id username
+3. create home dir and edit passwd file and do pwconv to get reflect in shadow file.
+4. chage the shadow file with kerborse
+5. create .k5login file in his home dir
+
+Giving access to origin and precache hosts as precache/vingette
+
+
+for i in $(cat v6origin); do echo "#######$i########"; ssh root@$i " cp -p  /opt/vignette/.k5login /opt/vignette/archive/.k5login.20100501.mvp";done
+for i in $(cat v6origin); do echo "#######$i########"; ssh root@$i "echo "hyalla@TIMEINC.NET" >>  /opt/vignette/.k5login";done
+
+===============================================================================================================
+check the upload status for people -->Request - 76505
+
+http://cp.timeinc.net:8080/inside/escalation/prob.hosting.html#hosted 
+
+for staging u need to give access for push.acl
+
+cp -p /usr/local/etc/push.acl /usr/local/etc/archive/push.acl.20091030-1412.mvp
+
+check the group premission of the dir and give access
+==================================================================================================================
+Display Request - 76510
+
+for giving acces to push for particular dir 
+
+check whether the users in that group and change the permission if the files have diff group
+
+for push.acl in v6 is diff 
+
+take the dir and add it to the group and check whether the user is in the group
+Take back up before editing:
+
+@tii @subs2 : /ew/static/cm :  /instyle/static/cm : /instyle/static/web/cm : /people/static/cm : /people/static/web/cm : /tii
+/omniture : /tii/secure/omniture : /ww2/tii/static : /toh/static/web/cm : /toh/static/cm
+
+@subs2 = atracz breisner cnrudd mbernhar pcho schew sweintra
+in subs2  cnrudd is present
+
+==============================================================================================================================
+Keynote 
+
+when u r creating the report u need to send an email to jeff and amanda hanes
+
+
+
+
+===============================================================================
+imeinc1-ld99:/home/tblow/scripts# for h in `cat fullhup`; do echo ------------------$h----------------; ssh root@$h "ps -aef |grep http |grep -v grep" ;done
+
+============================================================================================
+============================================================================================
+
+Clearing cache 
+
+log in to jum as root 
+
+cd /data/jump/job-scheduler/bin
+./clearcacheclient.pl
+
+create request 
+enter the group example v6prod or v6qa
+entet the path 
+/insytle
+.
+for recurrise select 1(onee)
+then /oprtion R
+then enter
+it will show the thing recuresive and the path
+then enter the date and time 
+q to quit
+done
+======================================================================================================
+DNS change
+
+https://io-private.collabnet.timeinc.net/wiki/Using_DNS_Repository?highlight=%28CategoryCategory%29|%28CategoryDnsIntradoc2%29
+
+
+#login to repo
+#cd /data/repo/dns/named/master
+#back up the file and make changes
+#cd /data/repo/dns/script
+#dnsPush.pl run this script 
+#
+
+=======================================================================================================
+
+NOTE: The $() is used to fork a subshell and execute processes. ${} is used to address shell variables.
+
+makemap hash virtusertable < virtusertable  ---> without restarting the sendmail and generating the db
+
+========================================================================================================
+egrep "dliu|mdigan|mmerkel|sbade|sdouza" /etc/passwd
+
+grepping multiple words
+
+======================================================================================================
+
+Redirects Start scrit
+
+Virtual redirects
+
+for i in $( ls /etc/rc3.d/S99apache ); do $i stop; sleep 5; $i start; done; date; sleep 5;  ps -ef | fgrep adclient | egrep -v '(origin|grep)';ps -ef|fgrep htt|egrep -v '(origin|grep|img3)'
+
+V6 redirect 
+
+for i in $(ls /etc/rc3.d/S92httpd-nextgen); do $i stop; sleep 15; ps -ef | grep http; $i start; sleep 5; done; date ; ps -ef | grep http | egrep -v grep
+
+
+====================================================================================================================
+SCAN IAD 
+
+stager:/# grep -rl "/gdml|/gdml|/gfly/gflyimage.jsp|/http://cp.timeinc.net:8080/scribble/admin/index.jsp|<FORM METHOD="GET" ACTION="scribble_board_action_string">|/scribble|scribble?boardName|scribble?template|/sdeamon.dyn|/cgi-bin/scribble/scribble.cgi|http://grades.timeinc.net/ecards|/opt/atg/Dynamo5.1.1/home/servers/grades|/ecards/saveEcard|/ecards/getEcard|/ecards/sendEcard|?ecardId| weboffers.timeinc.net|upload.timeinc.net"  /data/live/pathfinder/. >/var/tmp/IAD_SCAN.txt  &
+
+egrep -r "/gdml|/gdml4|/gfly/gflyimage.jsp|/http://cp.timeinc.net:8080/scribble/admin/index.jsp|<FORM METHOD="GET" ACTION="scribble_board_action_string">|/scribble|scribble?boardName|scribble?template|/sdeamon.dyn|/cgi-bin/scribble/scribble.cgi|http://grades.timeinc.net/ecards|/opt/atg/Dynamo5.1.1/home/servers/grades|/ecards/saveEcard|/ecards/getEcard|/ecards/sendEcard|?ecardId|weboffers.timeinc.net|upload.timeinc.net"  /data/vignette/cached-content/. |grep -v "/ew/scribble/" |awk  -F: '{print $1}'
+=============================================================================================================================
+
+Redirects for V6 Environments (EW, People, Instyle, Health
+etc) and TIPS Environments &nbsp;(Southernliving, Coastalliving, Sunset,
+Cookinglight, Realsimple etc) &nbsp;environments should not be setup as server level
+redirects (on repo /data/repo/apache/cluster*) unless it is stated in the
+ticket. These tickets should be reassigned to WebProduction group for them to
+manage in CMR (Client Managed Redirects)
+
+
+=================================================================================
+RED HAT PATCHING
+
+1. delete /etc/cron.daily/0*logwatch* on each host that was patched. This file should be deleted after host is back up after reboot.
+
+2. Also, ensure that AOL runs the sendmail fix script after the OS patching.
+
+=================================================================================
+Extracting a set of lines from  the file
+sed -n '/^# begin time.com/,/^# end time.com/p' test-re.txt
+
+ sed -n '/begin time.com/,/end time.com/p' redirects-www.config| grep -i "redirect url" | awk '{print $3 "^"$4}' 
+
+
+=========================================================================================
+Photn Haweuil cmd to work in linux
+
+ sudo /lib/udev/modem-modeswitch -d -v 0x12d1 -p 0x1446 -t option-zerocd
+
+========================================================================================================
+Bad chars removing cmd
+
+DOCROOT="/data/vignette/cached-content/"
+find ${DOCROOT} -type f -regex "^.*.[\?\+\#\$\*\(\)\!'&@;= ].*$"  -exec cp {} /var/tmp/bad-mvp \;
+
+
+===========================================================================================================
+groupadd -g 18026 hnan; usermod -g hnan -G real,spc,allyou
+for i in `cat ida.txt`; do groupadd -g `grep $i /etc/passwd  |awk -F":" '{print $3}'` $i; usermod -g $i $i; id $i; done
+==================================================================================================
+Returning http code
+
+for i in `cat Mahesh_last_sort_withonly_http.txt`;do curl --write-out %{http_code} $i; echo "######>$i";done >Mahesh_Last_withonly_htt.txt
+
+ cat Mahesh_Last_withonly_htt.txt |grep "######>http" |awk -F "######>" '{print $2 "*" $1}' |sed -e 's/<\/html>//g' >final.txt
+=============================================================================================================================================
+Grep
+
+
+grep -v ^# /etc/resolv.conf -->this gives only the server name , no comments
+
+-===========================================================================================================================
+
+for i in `cat hosts.txt`;do echo "##################$i#################" ;nmap -p 22 $i |grep open; if [  $? -ne 0 ]; then echo port blocked;fi;  done 
+
+================================================================================================================================================================
+i How to split large file into several smaller files linux
+# split --bytes=10M site_redirects_302-myrecipes-27-10-2010-22-44-20.csv small/site_
+
+====================================================================================================================================================================
+Redirects from excel 
+cat 24_time.com_redirects | awk  '{print "        " "redirect url " "\""$1 "\"" "      " "\"" $2"\""}
+
+Victor_Distd_check
+
+ for x in `ls -1d /data/spool/distd/* `; do /bin/echo -n "$x ";find $x -type f | wc -l; done
+=========================================================================================================================================================
+Restarting V5 Servers
+
+ for i in `ls /etc/rc3.d/S98ns-www`; do $i stop; $i start; done;date ; ps -ef | grep www/config
+-==================================================================================================================================================
+RSYNC
+
+Below command only syncs the direcotry strcutre not the content
+sync -auvr --rsh=ssh --include='*/' --exclude='*' /data/vignette/cached-content/ ${HOST}:/data/vignette/cached-content
+
+Syncing from stager excluding time.com dir
+
+rsync  -avz --exclude "time.com" /www4/ stager@s605202nj2vl515.uswhwk6.savvis.net:/data/timeinc/content/main/tips-tmplqa/docroot/htdocs/
+
+==========================================================================================================================================================
+
+Pusing a file to origing and Nextgen 
+
+cp the file to the destination 
+
+ex 
+
+cp stager:/www2/ew/.notfound.txt
+cd /www2/ew
+push -iesu mvelucha .notfound.txt
+
+========================================================================================
+ grep -v "^$" test  >test1   - ignoring blank lines
+========================================================================================
+
+ rm  `ls -l |grep "6 Apr  6 02" |awk '{print $9}'`   -- removing files in a dir based on time and date
+
+
+===========================================================
+adding a word infront of a file 
+
+sed  's/^/http:\/\/www.time.com/g' proquest_final.txt 
+
+=======================================
+Paste three files into trhee colums in a single file
+
+ paste  url_gale refer_gale user_agent.gale 
+
+===========================================================================
+
+Running cmds as sudo 
+
+
+ssh -t  s605202dl2sl114.usdlls2.savvis.net "sudo su root -c 'ls -l /var/run/ldapsync.pid'"
+ssh -t  s605202dl2sl114.usdlls2.savvis.net "sudo su root -c 'rm /var/run/ldapsync.pid'"
+for i in `cat test`; do echo "#### $i ####"; ssh -t  $i  "sudo su root -c '/etc/init.d/distd stop; sleep 30; /etc/init.d/distd start;  /data/timeinc/bin/ti_distd_monitor.sh  -v '"; done 
+for i in `hi -d LA1`;do echo "--- $i ---";ssh -o strictHostname=no $i 'uname -'; done
+
+
+====================================================================================
+Lowercase to upper case
+
+cat Compare_lookup_server.txt |grep spare |grep nj  |tr '[a-z]' '[A-Z]' |sed -e 's/NJ2/ /g'|awk '{print $1}'
+
+
+=========================================
+Removing white spaces
+
+cat first_time |grep " " | sed -e "s/ *\$//g"  >fix_first.txt
+
+
+
+==========================
+Sending mail
+
+mail -r vmahesh11@gmail.com -s "Mahesh Test" beep.mvp@gmail.com
+
+===========================================================================
+Condition based SED checking for one value and changing the first occurence ,chaning the file and taking backup of orginal file
+
+sed -i.bak  -e   '0,/FSCX/ { s/\/apps\/oracle\/product\/11.2.0\/dbhome_2/\/apps\/oracle\/product\/11.2.0\/dbhome_1/g } ' oratab
+
+sed -i '0,/beep-night-eoc/s//beep-day-eoc/' virtgrouptable.erb
+sed -i '0,/beep-day-eoc/s//beep-night-eoc/' virtgrouptable.erb
+
